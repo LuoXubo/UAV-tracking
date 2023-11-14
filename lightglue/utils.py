@@ -163,3 +163,11 @@ def match_pair(
     # remove batch dim and move to target device
     feats0, feats1, matches01 = [batch_to_device(rbd(x), device) for x in data]
     return feats0, feats1, matches01
+
+def transformation(pt_drone, H):
+    return H @ pt_drone
+
+def coords(mat):
+    a = mat[0][0]/mat[2][0]
+    b = mat[1][0]/mat[2][0]
+    return float(a), float(b)

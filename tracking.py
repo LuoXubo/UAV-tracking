@@ -19,7 +19,7 @@ tracker.init(frame, bbox)
 while True:
     # 读取当前帧
     ret, frame = cap.read()
-
+    # print(type(frame))
     if not ret:
         break
 
