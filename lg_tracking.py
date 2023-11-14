@@ -14,8 +14,11 @@ import numpy as np
 central_coords_x = 120
 central_coords_y = 90
 pt_drone = np.matrix([int(central_coords_x/2), int(central_coords_y/2), 1])
+ul = np.matrix([0, 0, 1])
+dr = np.matrix([central_coords_x, central_coords_y, 1])
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 'mps', 'cpu'
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 'mps', 'cpu'
+device = torch.device("cpu")
 
 extractor = SuperPoint(max_num_keypoints=2048).eval().to(device)  # load the extractor
 matcher = LightGlue(features="superpoint").eval().to(device)
@@ -42,11 +45,24 @@ while True:
     m_kpts0, m_kpts1 = kpts0[matches[..., 0]], kpts1[matches[..., 1]]
     if(len(m_kpts0) < 4):
         continue
+
     H, _ = cv2.findHomography(m_kpts0.numpy(), m_kpts1.numpy(), cv2.RANSAC, 5.0)
     pt_sate = transformation(pt_drone.T, H)
-    x, y = coords(pt_sate)
+    pt_ul = transformation(ul.T, H)
+    pt_dr = transformation(dr.T, H)
+    x_ul, y_ul = coords(pt_ul)
+    x_dr, y_dr = coords(pt_dr)
 
-    cv2.rectangle(frame, (x-central_coords_x/2, y-central_coords_y), (x+central_coords_x, y+central_coords_y), (0, 255, 0), 2)
+    x, y = coords(pt_sate)
+    # p1 = (int(x-central_coords_x/2), int(y-central_coords_y/2))
+    # p2 = (int(x+central_coords_x/2), int(y+central_coords_y/2))
+
+    p1 = (int(x_ul), int(y_ul))
+    p2 = (int(x_dr), int(y_dr))
+
+    # print(p1, p2)
+    cv2.rectangle(frame, p1, p2, (0, 255, 0), 2)
+
     cv2.imshow("Tracking", frame)
 
 
