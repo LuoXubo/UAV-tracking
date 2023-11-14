@@ -11,7 +11,7 @@ ret, frame = cap.read()
 bbox = cv2.selectROI("Select Object", frame, fromCenter=False, showCrosshair=True)
 
 # 选择跟踪器（这里使用CSRT）
-tracker = cv2.legacy.TrackerCSRT_create()
+tracker = cv2.TrackerCSRT_create()
 
 # 初始化跟踪器
 tracker.init(frame, bbox)
